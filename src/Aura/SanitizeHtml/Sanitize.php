@@ -61,8 +61,10 @@ class Sanitize
     public function sanitize($input)
     {
         $html = preg_replace_callback(
-                    '/<[^>]*>?/i', [$this, 'sanitizeTag'], $input
-                );
+            '/<[^>]*>?/i',
+            [$this, 'sanitizeTag'],
+            $input
+        );
 
         return $this->balanceTags($html);
     }
@@ -85,11 +87,11 @@ class Sanitize
 
             return $tag[0];
 
-        } else if (preg_match($this->a_white, $tag[0])) {
+        } elseif (preg_match($this->a_white, $tag[0])) {
 
             return $tag[0];
 
-        } else if (preg_match($this->img_white, $tag[0])) {
+        } elseif (preg_match($this->img_white, $tag[0])) {
 
             return $tag[0];
         }
@@ -115,14 +117,14 @@ class Sanitize
             return '';
         }
 
-        $regex = '/<\/?\w+[^>]*(\s|$|>)/';//todo g?
+        $regex = '/<\/?\w+[^>]*(\s|$|>)/';
 
         $count = preg_match_all($regex, $html, $tags);
         $tags  = array_map('strtolower', $tags[0]);
 
         // no HTML tags present? nothing to do
         if (0 == $count) {
-            return htmlspecialchars($html, \ENT_QUOTES|\ENT_HTML5, 'UTF-8', false);/// todo;
+            return htmlspecialchars($html, \ENT_QUOTES|\ENT_HTML5, 'UTF-8', false);// todo
         }
 
         $ignore_tags   = ['<p>', '<img>', '<br>', '<li>', '<hr>'];
@@ -134,9 +136,9 @@ class Sanitize
 
             // skip any already paired tags
             // and skip tags in our ignore list; assume they're self-closed
-            if ((isset($tagpaired[$ctag]) && $tagpaired[$ctag]) || 
+            if ((isset($tagpaired[$ctag]) && $tagpaired[$ctag]) ||
                 in_array('<'.$tagname.'>', $ignore_tags)) {
-                
+
                 continue;
             }
 
@@ -148,7 +150,7 @@ class Sanitize
                 // search forwards (next tags), look for closing tags
                 for ($ntag = $ctag + 1; $ntag < $count; $ntag++) {
 
-                    if ((! isset($tagpaired[$ntag]) || ! $tagpaired[$ntag]) && 
+                    if ((! isset($tagpaired[$ntag]) || ! $tagpaired[$ntag]) &&
                         $tags[$ntag] == '</' . $tagname . '>') {
 
                         $match = $ntag;
@@ -176,6 +178,7 @@ class Sanitize
         };
         $html  = preg_replace_callback($regex, $remove, $html);
 
-        return htmlspecialchars($html, \ENT_QUOTES|\ENT_HTML5, 'UTF-8', false);/// todo;
+        return htmlspecialchars($html, \ENT_QUOTES|\ENT_HTML5, 'UTF-8', false);// todo
     }
 }
+
